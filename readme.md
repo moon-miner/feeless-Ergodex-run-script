@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Ergo Logo]([https://ergonaut.space/images/logos/logo-black.svg](https://github.com/ergoplatform/awesome-ergo/blob/master/graphics/Logo/symbol_typo_vertical_bold__1920px__white.png))
+![Ergo Logo]([[https://ergonaut.space/images/logos/logo-black.svg](https://github.com/ergoplatform/awesome-ergo/blob/master/graphics/Logo/symbol_typo_vertical_bold__1920px__white.png](https://github.com/ergoplatform/awesome-ergo/blob/master/graphics/Logo/symbol_typo_vertical_bold__1920px__white.png?raw=true)
 
 **One-click setup for ErgoDEX development environment**  
 *Made with ❤️ for the Ergo blockchain community*
