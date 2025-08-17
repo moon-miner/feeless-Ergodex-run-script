@@ -2,7 +2,7 @@
 
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/ergoplatform/awesome-ergo/refs/heads/master/graphics/Logo/symbol_typo_vertical_bold__1920px__white.png" width="10%" alt="Ergo Logo">
+<img src="https://raw.githubusercontent.com/ergoplatform/awesome-ergo/refs/heads/master/graphics/Logo/symbol_typo_vertical_bold__1920px__white.png" width="25%" alt="Ergo Logo">
 
 **One-click setup for ErgoDEX development environment**  
 *Made with ❤️ for the Ergo blockchain community*
