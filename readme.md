@@ -242,7 +242,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 | Platform | Link |
 |----------|------|
 | 🐦 **Twitter** | [@ergoplatform](https://twitter.com/ergoplatform) |
-| 💬 **Discord** | [Ergo Discord](https://discord.gg/gYrVrjS) |
 | 💬 **Telegram** | [Ergo Platform](https://t.me/ergoplatform) |
 | 📖 **Reddit** | [r/ergonauts](https://reddit.com/r/ergonauts) |
 | 🌐 **Website** | [ergoplatform.org](https://ergoplatform.org) |
