@@ -655,13 +655,55 @@ check_ui_fee_modified() {
     return 1  # Not modified
 }
 
+# --- Check if uiFee.ts is already modified ---
+check_ui_fee_modified() {
+    log_debug "Checking if uiFee.ts is modified..."
+
+    local target_file
+    target_file=$(find_ui_fee_file)
+    local find_result=$?
+
+    if [ $find_result -ne 0 ] || [ -z "$target_file" ]; then
+        log_warn "uiFee.ts file not found in repository"
+        log_info "Searching for uiFee files..."
+        find interface/ -name "*uiFee*" -type f 2>/dev/null | while read -r file; do
+            log_info "Found related file: $file"
+        done
+        return 2  # File not found
+    fi
+
+    log_debug "Found uiFee.ts at: $target_file"
+
+    # Check if file contains our modification marker comments
+    if grep -q "// Modified: UI fees disabled" "$target_file" && \
+       grep -q "// Modified: Always return 0% fee instead of calculating percentage" "$target_file" && \
+       grep -q "// Modified: UI fees disabled by setting all values to 0" "$target_file"; then
+        log_skip "uiFee.ts already modified (UI fees disabled with custom implementation)"
+        return 0  # Already modified
+    fi
+
+    # Additional check: verify the key modification is present
+    if grep -q "const uiFeeInErg = inputInErg.percent(0)" "$target_file" && \
+       grep -q "uiFeePercent: 0" "$target_file"; then
+        log_skip "uiFee.ts already modified (UI fees disabled - found key modifications)"
+        return 0  # Already modified
+    fi
+
+    log_debug "uiFee.ts needs modification (not found modification markers)"
+    return 1  # Not modified
+}
+
 # --- Replace uiFee.ts with modified version (removes fees) ---
 update_ui_fee() {
     log_info "Checking UI fee configuration..."
 
     local modify_status
+
+    # Disable exit-on-error temporarily to capture return codes properly
+    set +e
     check_ui_fee_modified
     modify_status=$?
+    set -e
 
     case $modify_status in
         0)
@@ -692,9 +734,10 @@ update_ui_fee() {
     log_info "Updating uiFee.ts to disable UI fees..."
     log_info "Target file: $target_file"
 
-    # Create backup
-    cp "$target_file" "$target_file.backup"
-    log_info "Created backup: $target_file.backup"
+    # Create backup with timestamp
+    local backup_file="${target_file}.backup.$(date +%Y%m%d_%H%M%S)"
+    cp "$target_file" "$backup_file"
+    log_info "Created backup: $backup_file"
 
     # Write the modified content
     cat > "$target_file" << 'EOF'
@@ -802,12 +845,20 @@ EOF
 
     if [ $? -eq 0 ]; then
         log_info "uiFee.ts updated successfully (UI fees disabled)"
+
+        # Verify the modification was applied correctly
+        if grep -q "// Modified: UI fees disabled" "$target_file" && \
+           grep -q "uiFeePercent: 0" "$target_file"; then
+            log_info "Modification verification: SUCCESS"
+        else
+            log_warn "Modification verification: File written but markers not found"
+        fi
     else
         log_error "Failed to update uiFee.ts"
         # Restore backup
-        if [ -f "$target_file.backup" ]; then
-            cp "$target_file.backup" "$target_file"
-            log_info "Restored original file from backup"
+        if [ -f "$backup_file" ]; then
+            cp "$backup_file" "$target_file"
+            log_info "Restored original file from backup: $backup_file"
         fi
         return 1
     fi
