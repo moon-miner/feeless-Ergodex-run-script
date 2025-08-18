@@ -22,8 +22,8 @@ This **fully automated script** sets up a complete ErgoDEX development environme
 ### ✨ Features
 
 - 🔧 **Zero manual configuration** - Just run and go!
-- 🏗️ **Installs everything needed** - Node.js, Yarn, dependencies, and more
-- 📥 **Auto-clones ErgoDEX repository** - Always gets the latest dev branch
+- 🗃️ **Installs everything needed** - Node.js, Yarn, dependencies, and more
+- 🔥 **Auto-clones ErgoDEX repository** - Always gets the latest dev branch
 - 💰 **Removes UI fees** - No fees when using the local instance
 - 🎨 **Clean output** - No annoying ESLint warnings
 - 🔄 **Idempotent** - Run it multiple times safely
@@ -50,9 +50,9 @@ This **fully automated script** sets up a complete ErgoDEX development environme
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Installation & Setup
 
-### download and run:
+### Step 1: Download and prepare the script
 
 ```bash
 # Download the script
@@ -60,10 +60,74 @@ wget https://raw.githubusercontent.com/moon-miner/feeless-Ergodex-run-script/ref
 
 # Make it executable
 chmod +x run.sh
+```
 
-# Run it!
+### Step 2: Run the setup
+
+```bash
+# Run the automated setup
 ./run.sh
 ```
+
+The script will automatically:
+- ✅ Detect your Linux distribution
+- ✅ Install required packages (Node.js, Yarn, Git, build tools)
+- ✅ Clone the ErgoDEX repository (dev branch)
+- ✅ Remove UI fees for free trading
+- ✅ Disable ESLint warnings for clean output
+- ✅ Install all project dependencies
+- ✅ Start the development server
+
+### Step 3: Access the application
+
+Once the script completes successfully, you'll see:
+```
+Starting ErgoDEX development server...
+The application will be available at: http://localhost:3000
+```
+
+**🌐 Open your web browser and navigate to:** `http://localhost:3000`
+
+---
+
+## ⚠️ Important Usage Notes
+
+### Known Loading Issue
+When using the swap interface:
+
+1. **Initial Loading**: The interface may take a few moments to fully initialize
+2. **Swap Interface**: After entering swap amounts, you might encounter a **loading animation that seems stuck**
+3. **Solution**: If the loading persists for more than 30-60 seconds:
+   - **Simply reload the page (F5 or Ctrl+R)**
+   - After reloading, the interface will load much faster
+   - **Note**: This behavior occurs **every time you start the development server**, not just the first time
+
+### Normal Operation
+- After reloading the page, swaps should process quickly
+- The interface is fully functional once past the initial loading phase
+- All trading is **fee-free** on your local instance
+- **Remember**: You may need to reload the page each time you restart the server
+
+---
+
+## 🎛️ What the script modifies
+
+### 1. 💰 UI Fee Removal
+- Locates `uiFee.ts` automatically
+- Sets fee percentage to 0%
+- Creates backup of original file
+- **Result:** No fees when trading!
+
+### 2. 🎨 Clean Development Experience
+- Modifies `vite.config.ts` to disable ESLint warnings
+- Creates backup of original configuration
+- **Result:** Clean console output, no annoying warnings!
+
+### 3. 📦 Repository Management
+- Clones from official ErgoDEX repository
+- Automatically switches to `dev` branch
+- Updates existing repositories intelligently
+- **Result:** Always running the latest code!
 
 ---
 
@@ -97,37 +161,20 @@ The script intelligently detects your Linux distribution and installs:
 
 ---
 
-## 🎛️ What the script modifies
-
-### 1. 💰 UI Fee Removal
-- Locates `uiFee.ts` automatically
-- Sets fee percentage to 0%
-- Creates backup of original file
-- **Result:** No fees when trading!
-
-### 2. 🎨 Clean Development Experience
-- Modifies `vite.config.ts` to disable ESLint warnings
-- Creates backup of original configuration
-- **Result:** Clean console output, no annoying warnings!
-
-### 3. 📦 Repository Management
-- Clones from official ErgoDEX repository
-- Automatically switches to `dev` branch
-- Updates existing repositories intelligently
-- **Result:** Always running the latest code!
-
----
-
 ## 🏃‍♂️ Usage Examples
 
 ### First time setup:
 ```bash
-# Create a new directory
+# Create a new directory (optional)
 mkdir my-ergodex
 cd my-ergodex
 
-# Run the script
+# Download and run the script
+wget https://raw.githubusercontent.com/moon-miner/feeless-Ergodex-run-script/refs/heads/main/run.sh
+chmod +x run.sh
 ./run.sh
+
+# Once complete, open http://localhost:3000 in your browser
 ```
 
 ### Update existing installation:
@@ -150,7 +197,7 @@ cd my-ergodex
 graph TD
     A[🚀 Start Script] --> B{Check Linux Distro}
     B --> C[📦 Install Base Packages]
-    C --> D[📥 Install NVM]
+    C --> D[🔥 Install NVM]
     D --> E[🟢 Install Node.js v19]
     E --> F[🧶 Install Yarn]
     F --> G[📂 Clone/Update Repository]
@@ -187,6 +234,12 @@ sudo lsof -i :3000
 - Check your internet connection
 - Verify GitHub is accessible
 - Try running with `--debug` flag
+
+### Swap interface loading issues?
+- **Loading animation stuck**: This happens **every time you start the server**
+- **Solution**: Reload the page (F5 or Ctrl+R) after 30-60 seconds of loading
+- **After reload**: Interface should work normally for that session
+- **Note**: You'll need to do this reload each time you restart the development server
 
 ---
 
