@@ -52,12 +52,6 @@ This **fully automated script** sets up a complete ErgoDEX development environme
 
 ## 🚀 Quick Start
 
-### One-line installation:
-
-```bash
-curl -sSL https://raw.githubusercontent.com/moon-miner/feeless-Ergodex-run-script/refs/heads/main/run.sh | bash
-```
-
 ### Or download and run:
 
 ```bash
