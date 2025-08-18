@@ -72,7 +72,7 @@ chmod +x run.sh
 The script will automatically:
 - ✅ Detect your Linux distribution
 - ✅ Install required packages (Node.js, Yarn, Git, build tools)
-- ✅ Clone the ErgoDEX repository (dev branch)
+- ✅ Clone the ErgoDEX repository (ergodex branch)
 - ✅ Remove UI fees for free trading
 - ✅ Disable ESLint warnings for clean output
 - ✅ Install all project dependencies
@@ -137,7 +137,7 @@ The script intelligently detects your Linux distribution and installs:
 
 | Component | Purpose | Version |
 |-----------|---------|---------|
-| **Node.js** | JavaScript runtime | v19.x |
+| **Node.js** | JavaScript runtime | v20.x |
 | **NVM** | Node Version Manager | Latest |
 | **Yarn** | Package manager | Latest |
 | **Git** | Version control | System default |
@@ -198,7 +198,7 @@ graph TD
     A[🚀 Start Script] --> B{Check Linux Distro}
     B --> C[📦 Install Base Packages]
     C --> D[🔥 Install NVM]
-    D --> E[🟢 Install Node.js v19]
+    D --> E[🟢 Install Node.js v20]
     E --> F[🧶 Install Yarn]
     F --> G[📂 Clone/Update Repository]
     G --> H[💰 Remove UI Fees]
