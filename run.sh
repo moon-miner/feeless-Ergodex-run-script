@@ -5,7 +5,7 @@
 # Fully self-contained and idempotent
 # Works on clean Linux installations
 # Intelligent step checking - only does what's needed
-# Fixed version with better error handling
+# Updated for ergodex branch and Node.js v20
 # ===========================================
 
 set -e
@@ -173,8 +173,8 @@ install_nvm() {
     log_info "NVM installed successfully"
 }
 
-# --- Check if Node.js v19 is installed and set as default ---
-check_node_v19() {
+# --- Check if Node.js v20 is installed and set as default ---
+check_node_v20() {
     # Ensure NVM is loaded
     export NVM_DIR="$HOME/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
@@ -183,36 +183,36 @@ check_node_v19() {
         local current_version=$(node -v 2>/dev/null || echo "none")
         local default_version=$(nvm alias default 2>/dev/null || echo "none")
 
-        # Check if Node v19 is installed and is the default
-        if [[ "$current_version" == v19.* ]] && [[ "$default_version" == v19.* ]]; then
-            log_skip "Node.js v19 already installed and set as default ($current_version)"
+        # Check if Node v20 is installed and is the default
+        if [[ "$current_version" == v20.* ]] && [[ "$default_version" == v20.* ]]; then
+            log_skip "Node.js v20 already installed and set as default ($current_version)"
             return 0  # Already correct
-        elif nvm ls 19 >/dev/null 2>&1; then
-            log_info "Node.js v19 installed but not active. Setting as default..."
-            nvm alias default 19
-            nvm use 19
+        elif nvm ls 20 >/dev/null 2>&1; then
+            log_info "Node.js v20 installed but not active. Setting as default..."
+            nvm alias default 20
+            nvm use 20
             return 0  # Fixed
         fi
     fi
     return 1  # Need to install
 }
 
-# --- Install Node.js v19 using NVM ---
-install_node_v19() {
-    if check_node_v19; then
+# --- Install Node.js v20 using NVM ---
+install_node_v20() {
+    if check_node_v20; then
         return 0
     fi
 
-    log_info "Installing Node.js v19..."
+    log_info "Installing Node.js v20..."
 
     # Ensure NVM is loaded
     export NVM_DIR="$HOME/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
-    # Install Node.js v19
-    nvm install 19
-    nvm alias default 19
-    nvm use 19
+    # Install Node.js v20
+    nvm install 20
+    nvm alias default 20
+    nvm use 20
 
     # Verify installation
     NODE_VERSION=$(node -v)
@@ -222,8 +222,8 @@ install_node_v19() {
     log_info "NPM version: $NPM_VERSION"
 
     # Ensure we're using the right version
-    if [[ "$NODE_VERSION" != v19.* ]]; then
-        log_error "Failed to install Node.js v19. Current version: $NODE_VERSION"
+    if [[ "$NODE_VERSION" != v20.* ]]; then
+        log_error "Failed to install Node.js v20. Current version: $NODE_VERSION"
         exit 1
     fi
 }
@@ -417,7 +417,7 @@ check_yarn_installed() {
     # Ensure NVM and Node are loaded
     export NVM_DIR="$HOME/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-    nvm use 19 >/dev/null 2>&1
+    nvm use 20 >/dev/null 2>&1
 
     if command -v yarn >/dev/null 2>&1; then
         local yarn_version=$(yarn -v 2>/dev/null || echo "unknown")
@@ -436,7 +436,7 @@ install_yarn() {
     # Ensure NVM and Node are loaded
     export NVM_DIR="$HOME/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-    nvm use 19
+    nvm use 20
 
     log_info "Installing Yarn package manager..."
     npm install -g yarn
@@ -483,25 +483,25 @@ check_repo_status() {
     if timeout 10s git fetch origin --quiet 2>/dev/null; then
         log_info "Fetch successful, comparing commits..."
         local local_commit=$(git rev-parse HEAD 2>/dev/null || echo "")
-        local remote_dev=$(git rev-parse origin/dev 2>/dev/null || echo "")
+        local remote_ergodex=$(git rev-parse origin/ergodex 2>/dev/null || echo "")
 
         # Check if we're on the right branch
         local current_branch=$(git branch --show-current 2>/dev/null || echo "")
-        if [ "$current_branch" != "dev" ]; then
-            log_info "Not on dev branch (current: $current_branch), will need to switch"
+        if [ "$current_branch" != "ergodex" ]; then
+            log_info "Not on ergodex branch (current: $current_branch), will need to switch"
             cd ..
             return 2  # Need to update
         fi
 
-        # Use dev branch
+        # Use ergodex branch
         local remote_commit=""
-        if [ -n "$remote_dev" ]; then
-            remote_commit="$remote_dev"
-            log_info "Using dev branch"
+        if [ -n "$remote_ergodex" ]; then
+            remote_commit="$remote_ergodex"
+            log_info "Using ergodex branch"
         else
-            log_warn "Could not find dev branch"
+            log_warn "Could not find ergodex branch"
             cd ..
-            return 2  # Need to update/checkout dev
+            return 2  # Need to update/checkout ergodex
         fi
 
         log_info "Local commit: ${local_commit:0:8}"
@@ -551,10 +551,10 @@ setup_repo() {
             log_info "Cloning ErgoDEX repository..."
             git clone https://github.com/spectrum-finance/interface
             cd interface
-            log_info "Checking out dev branch..."
-            git checkout dev
+            log_info "Checking out ergodex branch..."
+            git checkout ergodex
             cd ..
-            log_info "Repository cloned successfully (dev branch)"
+            log_info "Repository cloned successfully (ergodex branch)"
             ;;
         2)
             # Need to update
@@ -565,22 +565,22 @@ setup_repo() {
             export GIT_TERMINAL_PROMPT=0
             export GIT_ASKPASS=/bin/echo
 
-            # Make sure we're on dev branch
-            log_info "Switching to dev branch..."
-            git checkout dev 2>/dev/null || {
-                log_warn "Could not checkout dev branch, trying to create it"
-                git checkout -b dev origin/dev 2>/dev/null || log_warn "Could not create dev branch"
+            # Make sure we're on ergodex branch
+            log_info "Switching to ergodex branch..."
+            git checkout ergodex 2>/dev/null || {
+                log_warn "Could not checkout ergodex branch, trying to create it"
+                git checkout -b ergodex origin/ergodex 2>/dev/null || log_warn "Could not create ergodex branch"
             }
 
-            # Try to pull from dev branch
-            log_info "Pulling from origin/dev..."
-            if timeout 15s git pull origin dev --quiet 2>/dev/null; then
+            # Try to pull from ergodex branch
+            log_info "Pulling from origin/ergodex..."
+            if timeout 15s git pull origin ergodex --quiet 2>/dev/null; then
                 log_info "Repository updated successfully"
             else
                 log_warn "Failed to pull updates (timeout or conflicts)"
                 log_info "Attempting to reset and pull..."
                 git reset --hard HEAD >/dev/null 2>&1
-                if timeout 15s git pull origin dev --quiet 2>/dev/null; then
+                if timeout 15s git pull origin ergodex --quiet 2>/dev/null; then
                     log_info "Repository updated successfully after reset"
                 else
                     log_warn "Could not update repository, continuing with current version"
@@ -623,36 +623,6 @@ find_ui_fee_file() {
     fi
 
     return 1  # Not found
-}
-
-# --- Check if uiFee.ts is already modified ---
-check_ui_fee_modified() {
-    log_debug "Checking if uiFee.ts is modified..."
-
-    local target_file
-    target_file=$(find_ui_fee_file)
-    local find_result=$?
-
-    if [ $find_result -ne 0 ] || [ -z "$target_file" ]; then
-        log_warn "uiFee.ts file not found in repository"
-        log_info "Searching for uiFee files..."
-        find interface/ -name "*uiFee*" -type f 2>/dev/null | while read -r file; do
-            log_info "Found related file: $file"
-        done
-        return 2  # File not found
-    fi
-
-    log_debug "Found uiFee.ts at: $target_file"
-
-    # Check if already modified - look for the actual modification pattern in your file
-    # Your file has: inputInErg.percent(0.3) which means 0.3% fee (effectively disabled)
-    if grep -q "inputInErg.percent(0.3)" "$target_file"; then
-        log_skip "uiFee.ts already modified (UI fees effectively disabled with 0.3% rate)"
-        return 0  # Already modified
-    fi
-
-    log_debug "uiFee.ts needs modification"
-    return 1  # Not modified
 }
 
 # --- Check if uiFee.ts is already modified ---
@@ -899,11 +869,11 @@ build_and_run() {
 
     cd interface
 
-    # Ensure we're using Node v19
+    # Ensure we're using Node v20
     log_info "Loading Node.js environment..."
     export NVM_DIR="$HOME/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-    nvm use 19
+    nvm use 20
 
     log_info "Current Node.js version: $(node -v)"
     log_info "Current NPM version: $(npm -v)"
@@ -955,7 +925,7 @@ show_summary() {
 
     check_basic_packages || needs_packages=true
     check_nvm_installed || needs_nvm=true
-    check_node_v19 || needs_node=true
+    check_node_v20 || needs_node=true
     check_yarn_installed || needs_yarn=true
 
     # Simple repository check for summary
@@ -973,9 +943,9 @@ show_summary() {
     echo "Actions planned:"
     [ "$needs_packages" = true ] && echo "  ✓ Install basic packages (curl, git, build tools)" || echo "  ✗ Basic packages (already installed)"
     [ "$needs_nvm" = true ] && echo "  ✓ Install NVM" || echo "  ✗ NVM (already installed)"
-    [ "$needs_node" = true ] && echo "  ✓ Install Node.js v19" || echo "  ✗ Node.js v19 (already installed)"
+    [ "$needs_node" = true ] && echo "  ✓ Install Node.js v20" || echo "  ✗ Node.js v20 (already installed)"
     [ "$needs_yarn" = true ] && echo "  ✓ Install Yarn" || echo "  ✗ Yarn (already installed)"
-    [ "$needs_repo" = true ] && echo "  ✓ Check/update ErgoDEX repository" || echo "  ✗ Repository (already up to date)"
+    [ "$needs_repo" = true ] && echo "  ✓ Check/update ErgoDEX repository (ergodex branch)" || echo "  ✗ Repository (already up to date)"
     [ "$needs_ui_fee" = true ] && echo "  ✓ Modify UI fee configuration" || echo "  ✗ UI fee (already modified)"
     [ "$needs_deps" = true ] && echo "  ✓ Install project dependencies" || echo "  ✗ Dependencies (already installed)"
     echo "  ✓ Start development server"
@@ -997,6 +967,7 @@ show_summary() {
 # --- Main execution flow ---
 main() {
     log_info "=== ErgoDEX Setup & Run Script ==="
+    log_info "Updated for ergodex branch and Node.js v20"
 
     # Show what will be done
     show_summary
@@ -1011,13 +982,13 @@ main() {
     log_info "Step 2: Installing NVM..."
     install_nvm
 
-    log_info "Step 3: Installing Node.js v19..."
-    install_node_v19
+    log_info "Step 3: Installing Node.js v20..."
+    install_node_v20
 
     log_info "Step 4: Installing Yarn..."
     install_yarn
 
-    log_info "Step 5: Setting up repository..."
+    log_info "Step 5: Setting up repository (ergodex branch)..."
     setup_repo
 
     log_info "Step 6: Updating UI fee configuration..."
