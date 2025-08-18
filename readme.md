@@ -52,7 +52,7 @@ This **fully automated script** sets up a complete ErgoDEX development environme
 
 ## 🚀 Quick Start
 
-### Or download and run:
+### download and run:
 
 ```bash
 # Download the script
